@@ -11,7 +11,7 @@ After migrating from a file-based 1Password vault to 1Password in the cloud, I f
 "Personal" was just a copy of "Old" and I never deleted it. Over time as 1Password displayed both vaults when searching for entries, the old vault entries got edited instead of the new and my whole password collection became a bit of a mess and I'm tired of seeing duplicate entries.... hence this script!
 
 ### What Problem Does It Solve?
-This script will:-
+This script will generate commands to:-
 * Delete duplicate entries from the old vault
 * Move more recently updated entries with the same title from the old to the new vault. Entries that were overwritten in the new vault are archived first in 1Password.
 * Move unique entries in the old vault to the new vault
