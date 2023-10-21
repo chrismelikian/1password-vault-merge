@@ -13,7 +13,7 @@ def read_file(filename):
 
 
 def delete_item_command(item):
-    commands = "# Deleting item '{item_name}' from vault '{vault_name}'\n"\
+    commands = "echo \"Deleting item '{item_name}' from vault '{vault_name}'\"\n"\
         .format(item_name=item['title'], vault_name=item['vault']['name'])
     commands += "op item delete {id} --archive --vault \"{vault_name}\""\
         .format(id=item['id'], vault_name=item['vault']['name'])
@@ -21,7 +21,7 @@ def delete_item_command(item):
 
 
 def move_and_overwrite_item_command(legacy_item, latest_item):
-    commands = "# archive item '{title}' in latest repository, move item from legacy repository to latest\n"\
+    commands = "echo \"Archive item '{title}' in latest repository, move item from legacy repository to latest\"\n"\
         .format(title=legacy_item['title'])
     commands += "op item delete {id} --archive --vault \"{destination_vault}\"\n"\
         .format(id=latest_item['id'], destination_vault=latest_item['vault']['name'])
@@ -31,7 +31,7 @@ def move_and_overwrite_item_command(legacy_item, latest_item):
 
 
 def move_item_command(legacy_item, destination_vault_name):
-    commands = "# move item '{title}' to '{destination_vault}\n"\
+    commands = "echo \"Move item '{title}' to '{destination_vault}'\"\n"\
         .format(title=legacy_item['title'], destination_vault=destination_vault_name)
     commands += "op item move {id} --current-vault \"{current_vault}\" --destination-vault \"{destination_vault}\"" \
         .format(id=legacy_item['id'], current_vault=legacy_item['vault']['name'], destination_vault=destination_vault_name)

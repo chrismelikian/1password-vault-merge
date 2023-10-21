@@ -51,6 +51,10 @@ python3 generate-1p-merge-commands.py legacy.json latest.json > commands.txt
 ```
 where 'legacy.json' is the old vault you eventually want to remove and latest.json is the vault you want to keep.
 
+Note that it can take many minutes to run as each 1Password operation can take almost 2 seconds. There's no way to speed this up.
+
+When you run multiple 1Password CLI commands from a single shell script you only get prompted once.
+
 This will create a file called `commands.txt` containing the changes to apply to your vaults.
 
 ### Analysing and running the generated commands
@@ -62,20 +66,20 @@ The 'commands.txt' file is divided into 3 sections:-
 
 Sample command deletion of duplicate:-
 ```
-# Deleting item 'Some Web Site' from vault 'Old'
+echo "Deleting item 'Some Web Site' from vault 'Old'"
 op item delete 52tvnplqhjajvnjizgvy5bdefr --archive --vault "Old"
 ```
 
 Sample commands for moving an entry from legacy to latest and archiving the latest entry:-
 ```
-# archive item 'www.somewebsite.com' in newer repository, move item from old repository to new
+echo "Archive item 'www.somewebsite.com' in newer repository, move item from legacy repository to latest"
 op item delete lizlfgq6avg4nchlkekxzrahby --archive --vault "Personal"
 op item move rktavdo54na4nhasisyd3k4xde --current-vault "Old" --destination-vault "Personal"
 ```
 
 Sample command for moving item from legacy to latest:-
 ```
-# move item 'somwewebsite.com' to 'Personal
+echo "Move item 'somwewebsite.com' to 'Personal'"
 op item move tbipqgg2rnbstnkvmwlbrhmbqu --current-vault "Old" --destination-vault "Personal"
 ```
 
