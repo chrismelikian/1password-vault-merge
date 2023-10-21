@@ -1,7 +1,6 @@
 import json
 import datetime as dt
 
-COMMENT_CHAR = '#'
 
 def read_file(filename):
     map_by_title = {}
@@ -12,33 +11,35 @@ def read_file(filename):
     file.close()
     return map_by_title
 
+
 def delete_item_command(item):
-    commands = "{comment_char} Deleting item '{item_name}' from vault '{vault_name}'\n"\
-        .format(item_name=item['title'], comment_char=COMMENT_CHAR, vault_name=item['vault']['name'])
+    commands = "# Deleting item '{item_name}' from vault '{vault_name}'\n"\
+        .format(item_name=item['title'], vault_name=item['vault']['name'])
     commands += "op item delete {id} --archive --vault \"{vault_name}\""\
         .format(id=item['id'], vault_name=item['vault']['name'])
     return commands
 
 
 def move_and_overwrite_item_command(legacy_item, latest_item):
-    commands = "{comment_char} archive item '{title}' in newer repository, move item from old repository to new\n"\
-        .format(title=legacy_item['title'], comment_char=COMMENT_CHAR)
+    commands = "# archive item '{title}' in latest repository, move item from legacy repository to latest\n"\
+        .format(title=legacy_item['title'])
     commands += "op item delete {id} --archive --vault \"{destination_vault}\"\n"\
         .format(id=latest_item['id'], destination_vault=latest_item['vault']['name'])
     commands += "op item move {id} --current-vault \"{current_vault}\" --destination-vault \"{destination_vault}\""\
         .format(id=legacy_item['id'], current_vault=legacy_item['vault']['name'], destination_vault=latest_item['vault']['name'])
     return commands
 
+
 def move_item_command(legacy_item, destination_vault_name):
-    commands = "{comment_char} move item '{title}' to '{destination_vault}\n"\
-        .format(comment_char=COMMENT_CHAR, title=legacy_item['title'], destination_vault=destination_vault_name)
+    commands = "# move item '{title}' to '{destination_vault}\n"\
+        .format(title=legacy_item['title'], destination_vault=destination_vault_name)
     commands += "op item move {id} --current-vault \"{current_vault}\" --destination-vault \"{destination_vault}\"" \
         .format(id=legacy_item['id'], current_vault=legacy_item['vault']['name'], destination_vault=destination_vault_name)
     return commands
 
 
-latest_vault_map = read_file('personal.json')
-legacy_vault_map = read_file('old.json')
+latest_vault_map = read_file('latest.json')
+legacy_vault_map = read_file('legacy.json')
 
 common_keys = filter(lambda x: x in latest_vault_map, legacy_vault_map)
 duplicated_entries_keys = set()
@@ -58,7 +59,7 @@ print('# delete dupes')
 for i in duplicated_entries_keys:
     print(delete_item_command(legacy_vault_map[i]))
 
-print('\n# Move newer items from old to new')
+print('\n# Move newer items from legacy to latest')
 for i in newer_legacy_entries:
     print(move_and_overwrite_item_command(legacy_vault_map[i], latest_vault_map[i]))
 
