@@ -1,5 +1,24 @@
 # 1Password Vault Merge
 
+<!-- TOC -->
+* [1Password Vault Merge](#1password-vault-merge)
+  * [About](#about)
+    * [Disclaimer](#disclaimer)
+    * [Why?](#why)
+    * [What Problem Does It Solve?](#what-problem-does-it-solve)
+    * [Terrible idea, I don't trust your script!](#terrible-idea-i-dont-trust-your-script)
+  * [How To Use](#how-to-use)
+    * [Pre-requisities](#pre-requisities)
+    * [Generating the commands (running the script!)](#generating-the-commands-running-the-script)
+  * [Analysing and running the generated commands](#analysing-and-running-the-generated-commands)
+    * [Check for duplicates in each vault and fix them](#check-for-duplicates-in-each-vault-and-fix-them)
+    * [Review Proposed Changes](#review-proposed-changes)
+* [Background](#background)
+    * [Duplicate Deletion](#duplicate-deletion)
+    * [Overwriting of latest vault item](#overwriting-of-latest-vault-item)
+    * [Migration Of Missing Item To Latest Vault](#migration-of-missing-item-to-latest-vault-)
+<!-- TOC -->
+
 ## About
 
 ### Disclaimer
