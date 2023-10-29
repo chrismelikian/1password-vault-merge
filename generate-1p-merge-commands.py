@@ -3,10 +3,6 @@ import datetime as dt
 import getopt
 import sys
 
-latest_vault_map = {}
-legacy_vault_map = {}
-
-
 def read_file(filename, output_prefix):
     map = {}
     warnings_file = open(f"{output_prefix}-{filename}-warnings.txt", "w")
@@ -27,25 +23,25 @@ def read_file(filename, output_prefix):
 def delete_item_command(item):
     commands = "echo \"Deleting item '{item_name}' from vault '{vault_name}'\"\n"\
         .format(item_name=item['title'], vault_name=item['vault']['name'])
-    commands += "op item delete {id} --archive --vault \"{vault_name}\""\
+    commands += "op item delete {id} --archive --vault \"{vault_name}\"\n"\
         .format(id=item['id'], vault_name=item['vault']['name'])
     return commands
 
 
 def move_and_overwrite_item_command(legacy_item, latest_item):
-    commands = "echo \"Archive item '{title}' in latest repository, move item from legacy repository to latest\"\n"\
+    commands = """echo "Archive item '{title}' in latest repository, move item from legacy repository to latest"\n"""\
         .format(title=legacy_item['title'])
-    commands += "op item delete {id} --archive --vault \"{destination_vault}\"\n"\
+    commands += """op item delete {id} --archive --vault "{destination_vault}"\n"""\
         .format(id=latest_item['id'], destination_vault=latest_item['vault']['name'])
-    commands += "op item move {id} --current-vault \"{current_vault}\" --destination-vault \"{destination_vault}\""\
+    commands += """op item move {id} --current-vault "{current_vault}" --destination-vault "{destination_vault}"\n"""\
         .format(id=legacy_item['id'], current_vault=legacy_item['vault']['name'], destination_vault=latest_item['vault']['name'])
     return commands
 
 
 def move_item_command(legacy_item, destination_vault_name):
-    commands = "echo \"Move item '{title}' to '{destination_vault}'\"\n"\
+    commands = """echo "Move item '{title}' to vault '{destination_vault}'"\n"""\
         .format(title=legacy_item['title'], destination_vault=destination_vault_name)
-    commands += "op item move {id} --current-vault \"{current_vault}\" --destination-vault \"{destination_vault}\"" \
+    commands += """op item move {id} --current-vault "{current_vault}" --destination-vault "{destination_vault}"\n""" \
         .format(id=legacy_item['id'], current_vault=legacy_item['vault']['name'], destination_vault=destination_vault_name)
     return commands
 
@@ -67,6 +63,7 @@ def calculate_differences():
 
 def main(argv):
     opts, args = getopt.getopt(argv,"h",["legacy-file=","latest-file=","output-prefix="])
+    global latest_vault_map, legacy_vault_map
     latest_file_name = None
     legacy_file_name = None
     output_prefix = None
