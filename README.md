@@ -3,12 +3,14 @@
 ## About
 
 ### Disclaimer
-I'm just writing a script to solve my problems. I take no responsibility whatsoever for what you run or do with your vaults. You do everything at your own risk.
+I'm just writing a script to solve my problems. I take no responsibility whatsoever for what you run or do with your vaults with or without my code or documentation. You do everything at your own risk.
 
 ### Why?
-After migrating from a file-based 1Password vault to 1Password in the cloud, I found myself with 2 vaults, "Old" and "Personal".
+After migrating from a file-based 1Password vault to 1Password in the cloud and some imports of old vaults and some laziness, I found myself with 2 vaults, "Old" and "Personal".
 
-"Personal" was just a copy of "Old" and I never deleted it. Over time as 1Password displayed both vaults when searching for entries, the old vault entries got edited instead of the new and my whole password collection became a bit of a mess and I'm tired of seeing duplicate entries.... hence this script!
+What I ended up with is 2 vaults with many duplicates and some entries in the older vault containing newer passwords and some entries that weren't in the newer vault at all.
+
+In 1Password when I need to choose a Login item I often get many choices with the same name which is very frustrating.
 
 ### What Problem Does It Solve?
 This script will generate commands to:-
@@ -16,6 +18,7 @@ This script will generate commands to:-
 * Move more recently updated entries with the same title from the old to the new vault. Entries that were overwritten in the new vault are archived first in 1Password.
 * Move unique entries in the old vault to the new vault
 
+This should help to get to the stage where you can have just one vault and no duplicates.
 
 ### Terrible idea, I don't trust your script!
 I don't blame you, you should be worried! :-)
@@ -33,7 +36,7 @@ Instead, it's left for you, dear reader, to review and execute the generated scr
 2. Run `op vault list` to ensure your 1Password CLI is working correctly
 3. Get the names of your 2 vaults and apply the terminology I'm going to be using:- 
    1. 'Latest' Vault is the newer vault, the one that you want to keep eventually. For me the vault name was 'Personal'
-   2. 'Legacy' Vault is your original vault that you want to delete eventually. For me the vault name was 'Old'
+   2. 'Legacy' Vault is your older vault that you want to delete eventually. For me the vault name was 'Old'
 
 ### Generating the commands
 
@@ -47,9 +50,23 @@ op item list --vault='Personal' --format=json > latest.json
 Now, run the script in your Terminal window, PowerShell or command line prompt:-
 
 ```
-python3 generate-1p-merge-commands.py legacy.json latest.json > commands.txt
+python3 generate-1p-merge-commands.py --legacy-file=legacy.json --latest-file=latest.json --output-prefix=20231029-0954
 ```
-where 'legacy.json' is the old vault you eventually want to remove and latest.json is the vault you want to keep.
+where:-
+* `--legacy-file` is the old vault you eventually want to remove,
+* `--latest-file` is the vault you want to keep and
+* `--output-prefix` is the prefix given to the multiple output files, so you can seem them as a collection
+
+The output files will be:-
+* `<prefix>-duplicates.txt` - the commands needed to delete common items from the legacy repository.
+* `<prefix>-newer.txt` - the commands needed to move common items where the legacy vault has a new updated date and by inference is newer and should supercede the entry in the latest vault
+* `<prefix>-latest.txt`- the commands to move items which are in the legacy vault but not in the latest vault
+* `<prefix>-<legacy-file>-warnings.txt` - items in the legacy vault which have duplicate titles. These need to be processed manually in 1Password before the comparison with another vault can take place. These items are not considered in the vault comparison.
+* `<prefix>-<latest-file>-warnings.txt` - items in the latest vault which have duplicate titles. These need to be processed manually in 1Password before the comparison with another vault can take place. These items are not considered in the vault comparison.
+
+
+
+
 
 Note that it can take many minutes to run as each 1Password operation can take almost 2 seconds. There's no way to speed this up.
 
