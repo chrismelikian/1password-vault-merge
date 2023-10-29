@@ -87,12 +87,14 @@ def main(argv):
         dupes_file.write(delete_item_command(legacy_vault_map[i]))
     dupes_file.close()
 
-    newer_file = open(f"{output_prefix}-newer.txt", "w")
+    # Move newer ones in legacy vault to latest
+    newer_file = open(f"{output_prefix}-overwrite.txt", "w")
     for i in newer_legacy_entries:
         newer_file.write(move_and_overwrite_item_command(legacy_vault_map[i], latest_vault_map[i]))
     newer_file.close()
 
-    latest_file = open(f"{output_prefix}-latest.txt", "w")
+    # Move missing items to the latest vault
+    latest_file = open(f"{output_prefix}-missing.txt", "w")
     latest_vault_item = next(iter(latest_vault_map.items()))[1]
     latest_vault_name = latest_vault_item['vault']['name']
     for i in sorted(missing_keys):

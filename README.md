@@ -38,7 +38,7 @@ Instead, it's left for you, dear reader, to review and execute the generated scr
    1. 'Latest' Vault is the newer vault, the one that you want to keep eventually. For me the vault name was 'Personal'
    2. 'Legacy' Vault is your older vault that you want to delete eventually. For me the vault name was 'Old'
 
-### Generating the commands
+### Generating the commands (running the script!)
 
 You'll need to extract the metadata for each vault using:-
 ```
@@ -59,34 +59,51 @@ where:-
 
 The output files will be:-
 * `<prefix>-duplicates.txt` - the commands needed to delete common items from the legacy repository.
-* `<prefix>-newer.txt` - the commands needed to move common items where the legacy vault has a new updated date and by inference is newer and should supercede the entry in the latest vault
-* `<prefix>-latest.txt`- the commands to move items which are in the legacy vault but not in the latest vault
+* `<prefix>-overwrite.txt` - the commands needed to move common items where the legacy vault has a newer updated date and by inference is newer and should supercede the entry in the latest vault. The item in the latest vault is archived first.
+* `<prefix>-missing.txt`- the commands to move items which are in the legacy vault but not in the latest vault
 * `<prefix>-<legacy-file>-warnings.txt` - items in the legacy vault which have duplicate titles. These need to be processed manually in 1Password before the comparison with another vault can take place. These items are not considered in the vault comparison.
 * `<prefix>-<latest-file>-warnings.txt` - items in the latest vault which have duplicate titles. These need to be processed manually in 1Password before the comparison with another vault can take place. These items are not considered in the vault comparison.
 
+## Analysing and running the generated commands
+Now that you've generated the commands, it's time for you to review them and do some checks to see if they match your expectations.
 
+### Check for duplicates in each vault and fix them
 
+Check the 2 warning files to see if there are any duplicate entries in each of the vaults. It's worth fixing these first and then re-running the script until there are no more warnings.
 
+### Review Proposed Changes
+
+Go through the generated duplicates, missing and overwrite files and check to see if you're happy with the changes. Comment out or delete the ones you don't want to enact.
+
+To reiterate, only action these commands at your own risk. Do all the good things like backup etc before you do anything.
+
+To run the scripts on Linux/Mac:-
+```
+sh <prefix>-duplicates.txt
+sh <prefix>-overwrite.txt
+sh <prefix>-missing.txt
+```
+
+To run on Windows. (This is a guess, I don't have Windows):-
+```
+powershell -f <prefix>-duplicates.txt
+powershell -f <prefix>-overwrite.txt
+powershell -f <prefix>-missing.txt
+```
 
 Note that it can take many minutes to run as each 1Password operation can take almost 2 seconds. There's no way to speed this up.
 
-When you run multiple 1Password CLI commands from a single shell script you only get prompted once.
+You may get prompted by 1Password one or more times to allow the CLI commands to execute.
 
-This will create a file called `commands.txt` containing the changes to apply to your vaults.
+# Background
 
-### Analysing and running the generated commands
-
-The 'commands.txt' file is divided into 3 sections:-
-* deletion of duplicates from the legacy vault
-* moving entries with the same title from the legacy vault to the latest vault while archiving the corresponding entry in the latest vault first
-* moving entries to the latest vault that are present in the legacy vault but not in the latest vault
-
+### Duplicate Deletion
 Sample command deletion of duplicate:-
 ```
 echo "Deleting item 'Some Web Site' from vault 'Old'"
 op item delete 52tvnplqhjajvnjizgvy5bdefr --archive --vault "Old"
 ```
-
+### Overwriting of latest vault item
 Sample commands for moving an entry from legacy to latest and archiving the latest entry:-
 ```
 echo "Archive item 'www.somewebsite.com' in newer repository, move item from legacy repository to latest"
@@ -94,10 +111,9 @@ op item delete lizlfgq6avg4nchlkekxzrahby --archive --vault "Personal"
 op item move rktavdo54na4nhasisyd3k4xde --current-vault "Old" --destination-vault "Personal"
 ```
 
+### Migration Of Missing Item To Latest Vault 
 Sample command for moving item from legacy to latest:-
 ```
 echo "Move item 'somwewebsite.com' to 'Personal'"
 op item move tbipqgg2rnbstnkvmwlbrhmbqu --current-vault "Old" --destination-vault "Personal"
 ```
-
-Review the commands that have been generated and you can either copy/paste the ones you want into a new script or rename the file to commands.sh and execute it as per your operating system.
